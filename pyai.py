@@ -2,22 +2,14 @@ import random
 import marshal
 from os.path import isfile
 
-replace_map = [
-    ('?', '.'),
-    ('!', '.'),
-    (',', ''),
-    ('\'', ''),
-    ('"', ''),
-    (':', ''),
-    ('^', ''),
-    ('/', ''),
-    ('\\', ''),
-]
+sentence_ends = ['.', '?', '!']
+
+invalid_chars = [',', '\'', '"', ':', '^', '/', '\\']
 
 
 class PyAI:
 
-    def __init__(self, db_file='ai.db', min_len=5, max_len=10):
+    def __init__(self, db_file='ai.db'):
         self.db_file = db_file
         self.lines = {}
         self.words = {}
@@ -44,14 +36,18 @@ class PyAI:
         filter message to correct sentence-splitting
         and delete censored words
         '''
-        for orig, repl in replace_map:
-            msg = msg.replace(orig, repl)
+        # fix sentence-ends to allow right splitting
+        for sentence_end in sentence_ends:
+            msg = msg.replace(sentence_end, ' . ')
         sentences = []
-        for sentence in msg.split('.'):
+        for sentence in msg.split(' . '):
             sentence_ = []
             for word in sentence.split():
-                if len(word) >= 3:
-                    sentence_.append(word)
+                # replace invalid cahrs
+                word_ = ''.join(char for char in word if char not in invalid_chars)
+                # only use words > 2 chars
+                if len(word_) >= 2:
+                    sentence_.append(word_)
             if len(sentence_) >= 1:
                 sentences.append(' '.join(sentence_).lower())
         return sentences
@@ -105,11 +101,11 @@ class PyAI:
 
             if hashval not in self.lines:
                 self.lines[hashval] = [sentence, 1]
-                for x in range(0, len(words)):
-                    if words[x] in self.words:
-                        self.words[words[x]].append((hashval, x))
+                for idx, word in enumerate(words):
+                    if word in self.words:
+                        self.words[word].append((hashval, idx))
                     else:
-                        self.words[words[x]] = [(hashval, x)]
+                        self.words[word] = [(hashval, idx)]
             else:
                 self.lines[hashval][1] += 1
         [learn_sentence(sentence) for sentence in sentences]
