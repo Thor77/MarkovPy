@@ -2,10 +2,8 @@ import random
 import marshal
 from os.path import isfile
 
+voyelles = 'aÃ Ã¢eÃ©Ã¨ÃªiÃ®Ã¯oÃ¶Ã´uÃ¼Ã»y'
 sentence_ends = ['.', '?', '!']
-
-invalid_chars = [',', '\'', '"', ':', '^', '/', '\\']
-
 
 class PyAI:
 
@@ -31,25 +29,36 @@ class PyAI:
             marshal.dump(self.lines, f)
             marshal.dump(self.words, f)
 
-    def filter_message(self, msg):
+    def is_valid(self, word):
+        for c in word:
+            num_voy = 0
+            num_digits = 0
+            num_chars = 0
+            if c in voyelles:
+                num_voy += 1
+            elif c.isalpha():
+                num_digits += 1
+            elif c.isdigit():
+                num_chars += 1
+
+        # if word > 13 chars
+        # or less than 25% voyels
+        # or digits and chars in the word
+        if len(word) > 13 or \
+            (((num_voy * 100) / len(word) < 26) and len(word) > 5)\
+                or (num_chars and num_digits):
+            return False
+        return True
+
+    def filter_split_message(self, msg):
         '''
-        filter message to correct sentence-splitting
-        and delete censored words
+        filter message (delete some words, correct sentence-endings) and split
         '''
-        # fix sentence-ends to allow right splitting
         for sentence_end in sentence_ends:
             msg = msg.replace(sentence_end, ' . ')
         sentences = []
         for sentence in msg.split(' . '):
-            sentence_ = []
-            for word in sentence.split():
-                # replace invalid cahrs
-                word_ = ''.join(char for char in word if char not in invalid_chars)
-                # only use words > 2 chars
-                if len(word_) >= 2:
-                    sentence_.append(word_)
-            if len(sentence_) >= 1:
-                sentences.append(' '.join(sentence_).lower())
+            sentences.append(' '.join(word for word in sentence.split() if self.is_valid(word)))
         return sentences
 
     def process(self, msg, reply=True, learn=True):
@@ -58,7 +67,7 @@ class PyAI:
         add words to db if learn=True
         generate reply if reply=True
         '''
-        sentences = self.filter_message(msg)
+        sentences = self.filter_split_message(msg)
         if len(sentences) < 1:
             return ''
         if learn:
@@ -74,28 +83,6 @@ class PyAI:
         '''
         def learn_sentence(sentence):
             words = sentence.split()
-            '''
-            voyelles = 'aÃ Ã¢eÃ©Ã¨ÃªiÃ®Ã¯oÃ¶Ã´uÃ¼Ã»y'
-            for word in words:
-                num_voy = 0
-                num_digits = 0
-                num_chars = 0
-                for c in word:
-                    if c in voyelles:
-                        num_voy += 1
-                    if c.isalpha():
-                        num_digits += 1
-                    if c.isdigit():
-                        num_chars += 1
-
-                    # if word > 13 chars
-                    # or less than 25% voyels
-                    # or digits and chars in the word
-                    if len(word) > 13 or \
-                        (((num_voy * 100) / len(word) < 26) and len(word) > 5)\
-                            or (num_chars and num_digits):
-                        return
-            '''
 
             hashval = hash(sentence)
 
