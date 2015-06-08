@@ -52,13 +52,13 @@ class PyAI:
 
     def filter_split_message(self, msg):
         '''
-        filter message (delete some words, correct sentence-endings) and split
+        modify message (delete some words, correct sentence-endings, convert to lower-case) and split
         '''
         for sentence_end in sentence_ends:
             msg = msg.replace(sentence_end, ' . ')
         sentences = []
         for sentence in msg.split(' . '):
-            sentences.append(' '.join(word for word in sentence.split() if self.is_valid(word)))
+            sentences.append((' '.join(word.strip() for word in sentence.split() if self.is_valid(word))).lower().strip())
         return sentences
 
     def process(self, msg, reply=True, learn=True):
@@ -81,6 +81,9 @@ class PyAI:
         '''
         learn from sentences
         '''
+        def learn_sentence(sentence):
+            if sentence[0].isdigit() or sentence[0] == '<' or line[0] == '[':
+                return
         def learn_sentence(sentence):
             words = sentence.split()
 
