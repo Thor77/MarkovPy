@@ -1,159 +1,157 @@
 import random
-import marshal
-from os.path import isfile
+import re
 
-voyelles = 'aÃ Ã¢eÃ©Ã¨ÃªiÃ®Ã¯oÃ¶Ã´uÃ¼Ã»y'
-sentence_ends = ['.', '?', '!']
+import redis
+
+re_smiley = re.compile(r'[8;:=%][-oc*^]?[)(D\/\\]')
+re_smiley_reversed = re.compile(r'[)(D\/\\][-oc*^]?[8;:=%]')
+re_smiley_asian = re.compile(r'\^[o_.]?\^')
+re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
+re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
+sentence_endings = ['?', '!', '.']
 
 class PyAI:
 
-    def __init__(self, db_file='ai.db'):
-        self.db_file = db_file
-        self.lines = {}
-        self.words = {}
-        self.min_context_depth = 5
-        self.max_context_depth = 10
-        self.load_db()
-
-    def load_db(self):
-        if isfile(self.db_file):
-            print('loading database...')
-            with open(self.db_file, 'rb') as f:
-                self.lines = marshal.load(f)
-                self.words = marshal.load(f)
-        else:
-            print('No database found!')
-
-    def save_db(self):
-        with open(self.db_file, 'wb') as f:
-            marshal.dump(self.lines, f)
-            marshal.dump(self.words, f)
-
-    def is_valid(self, word):
-        for c in word:
-            num_voy = 0
-            num_digits = 0
-            num_chars = 0
-            if c in voyelles:
-                num_voy += 1
-            elif c.isalpha():
-                num_digits += 1
-            elif c.isdigit():
-                num_chars += 1
-
-        # if word > 13 chars
-        # or less than 25% voyels
-        # or digits and chars in the word
-        if len(word) > 13 or \
-            (((num_voy * 100) / len(word) < 26) and len(word) > 5)\
-                or (num_chars and num_digits):
-            return False
-        return True
-
-    def filter_split_message(self, msg):
+    def __init__(self, db_prefix='pyai', db_host='localhost', db_port=6379, db_id=0):
         '''
-        modify message (delete some words, correct sentence-endings, convert to lower-case) and split
+        :param str db_prefix: prefix for redis-keys
+        :param str db_host: host for redis-db
+        :param int db_port: port for redis-db
+        :param int db_id: id for redis-db
         '''
-        for sentence_end in sentence_ends:
-            msg = msg.replace(sentence_end, ' . ')
-        sentences = []
-        for sentence in msg.split(' . '):
-            sentences.append((' '.join(word.strip() for word in sentence.split() if self.is_valid(word))).lower().strip())
-        return sentences
+        self.db = redis.StrictRedis(host=db_host, port=db_port, db=db_id)
+        self.prefix = db_prefix
 
-    def process(self, msg, reply=True, learn=True):
+    def _words_key(self, word):
         '''
-        process 'msg'
-        add words to db if learn=True
-        generate reply if reply=True
-        '''
-        sentences = self.filter_split_message(msg)
-        if len(sentences) < 1:
-            return ''
-        if learn:
-            self.learn(sentences)
-        if reply:
-            return self.reply(sentences[-1])
-        else:
-            return ''
+        prefix ``word`` with db-prefix
 
-    def learn(self, sentences):
+        :param str word: word to gen key for
         '''
-        learn from sentences
+        return ':'.join((self.prefix, word))
+
+    def _is_smiley(self, word):
         '''
-        def learn_sentence(sentence):
-            if sentence[0].isdigit() or sentence[0] == '<' or line[0] == '[':
-                return
-        def learn_sentence(sentence):
-            words = sentence.split()
+        check if ``word`` is a smiley
 
-            hashval = hash(sentence)
+        :param str word: word to check
+        '''
+        for re_smiley in re_smileys:
+            if re_smiley.match(word):
+                return True
+        return False
 
-            if hashval not in self.lines:
-                self.lines[hashval] = [sentence, 1]
-                for idx, word in enumerate(words):
-                    if word in self.words:
-                        self.words[word].append((hashval, idx))
-                    else:
-                        self.words[word] = [(hashval, idx)]
+    def prepare_line(self, line):
+        '''
+        split words to line, lower words, add newlines and remove invalid chars
+
+        :param str line: line to prepare
+        '''
+        # split line to words and remove words < 3 chars (doesn't remove smileys)
+        words_ = line.split()
+        words = []
+        for word_ in words_:
+            word = None
+            # prevent smileys and urls from getting lower'd
+            if self._is_smiley(word_) or word_ == '<3' or re_url.match(word_):
+                word = word_
             else:
-                self.lines[hashval][1] += 1
-        [learn_sentence(sentence) for sentence in sentences]
+                word = word_.lower()
+                # filter all non-chars & non-digits from word
+                word = ''.join(c for c in word if (c.isalpha() or c.isdigit()) and c != '\n')
+            # maybe the word is completely lost now
+            if word:
+                words.append(word)
+                # check if word ended with sentence ending to add \n
+                for sentence_ending in sentence_endings:
+                    if word_.endswith(sentence_ending):
+                        words.append('\n')
+                        break
+        return words
 
-    def reply(self, sentence):
+    def learn(self, line, prepared=False):
         '''
-        generate reply from a sentence
+        add line to database
+
+        :param str line: line to add
+        :param bool prepared: line was already split to words
         '''
-        orig_sentence = sentence
-        words = sentence.split()
-        if len(words) <= 0:
-            return ''
-
-        # take a random word as start
-        sentence = [random.choice(words)]
-
-        # build the left edge
-        done = False
-        while not done:
-            words_entry = random.choice(self.words[sentence[0]])
-            line = self.lines[words_entry[0]][0]
-            line_words = line.split()
-
-            word_pos = words_entry[1]
-
-            for i in range(random.randint(self.min_context_depth, self.max_context_depth)):
-                if (word_pos - i) < 0:
-                    done = True
-                    break
-                else:
-                    word = line_words[word_pos - 1]
-                    if word not in sentence:
-                        sentence.insert(0, word)
-                if (word_pos - i) == 0:
-                    done = True
-                    break
-
-        # build the right edge
-        done = False
-        while not done:
-            words_entry = random.choice(self.words[sentence[-1]])
-            line = self.lines[words_entry[0]][0]
-            line_words = line.split()
-
-            word_pos = words_entry[1]
-
-            for i in range(random.randint(self.min_context_depth, self.max_context_depth)):
-                if (word_pos + i) >= len(line_words):
-                    done = True
-                    break
-                else:
-                    word = line_words[word_pos + i]
-                    if word not in sentence:
-                        sentence.append(word)
-
-        reply_str = ' '.join(sentence).strip()
-
-        if reply_str == orig_sentence.strip():
-            return ''
+        if prepared:
+            words = line
         else:
-            return reply_str
+            words = self.prepare_line(line)
+        for i in range(0, len(words)):
+            curr_word = words[i]
+            if len(words) <= i + 1:
+                break
+            next_word = words[i + 1]
+            word_db_key = self._words_key(curr_word)
+            if not self.db.exists(word_db_key):
+                self.db.hmset(word_db_key, {next_word: 1})
+            else:
+                self.db.hincrby(word_db_key, next_word)
+
+    def reply(self, start, min_length=5, max_length=10, prepared=False):
+        '''
+        generated a reply to ``start``
+
+        :param int min_length: minimal length of reply
+        :param int max_length: max length of reply
+        :param bool prepared: line was already split to words
+        '''
+        if prepared:
+            start_words = start
+        else:
+            start_words = self.prepare_line(start)
+        # choose best known word to start with
+        word_relations = [(word, self.db.hlen(self._words_key(word))) for word in start_words if self.db.exists(self._words_key(word))]
+        if not word_relations:
+            return None
+        if len(word_relations) == 1:
+            best_known_word = word_relations[0][0]
+        else:
+            sorted_word_relations = sorted(word_relations, key=lambda x: x[1])
+            highest_num = sorted_word_relations[0][1]
+            best_known_words = [sorted_word_relations[0][0]]
+            for word, num in word_relations:
+                if num == highest_num:
+                    best_known_words.append(word)
+                else:
+                    break
+            best_known_word = random.choice(best_known_words)
+        # gen answer
+        length = random.randint(min_length, max_length)
+        answer = [best_known_word]
+        while len(answer) < length:
+            # get all possible next words
+            word_key = self._words_key(answer[-1])
+            # key doesn't exist => no possible next words
+            if not self.db.exists(word_key):
+                break
+            possible_words = self.db.hgetall(word_key).items()
+            if len(possible_words) == 1:
+                word = list(possible_words)[0][0].decode('utf-8')
+            else:
+                # sort random word but weight
+                best_words = [word.decode('utf-8') for word, num in possible_words for i in range(int(num))]
+                word = random.choice(best_words)
+            # choosen word == line-end => break
+            if word == '\n':
+                break
+            # add to answer
+            answer.append(word)
+        return ' '.join(answer)
+
+    def process(self, line, learn=True, reply=True):
+        '''
+        process ``line``
+
+        :param str line: line to process
+        :param bool learn: learn from line
+        :param bool reply: reply to line (and return answer)
+        '''
+        prepared_line = self.prepare_line(line)
+        if learn:
+            self.learn(prepared_line, prepared=True)
+        if reply:
+            return self.reply(prepared_line, prepared=True)
