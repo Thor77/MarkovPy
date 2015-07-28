@@ -10,14 +10,19 @@ re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
 re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
 sentence_endings = ['?', '!', '.']
 
+
 class PyAI:
 
     def __init__(self, db_prefix='pyai', db_host='localhost', db_port=6379, db_id=0):
         '''
-        :param str db_prefix: prefix for redis-keys
-        :param str db_host: host for redis-db
-        :param int db_port: port for redis-db
-        :param int db_id: id for redis-db
+        :param db_prefix: prefix for redis-keys
+        :param db_host: host for redis-db
+        :param db_port: port for redis-db
+        :param db_id: id for redis-db
+        :type db_prefix: str
+        :type db_host: str
+        :type db_port: int
+        :type db_id: int
         '''
         self.db = redis.StrictRedis(host=db_host, port=db_port, db=db_id)
         self.prefix = db_prefix
@@ -26,7 +31,10 @@ class PyAI:
         '''
         prefix ``word`` with db-prefix
 
-        :param str word: word to gen key for
+        :param word: word to gen key for
+        :type word: str
+        :return: prefixed ``word``
+        :rtype: str
         '''
         return ':'.join((self.prefix, word))
 
@@ -34,7 +42,10 @@ class PyAI:
         '''
         check if ``word`` is a smiley
 
-        :param str word: word to check
+        :param word: word to check
+        :type word: str
+        :return: result of check
+        :rtype: bool
         '''
         for re_smiley in re_smileys:
             if re_smiley.match(word):
@@ -45,7 +56,10 @@ class PyAI:
         '''
         split words to line, lower words, add newlines and remove invalid chars
 
-        :param str line: line to prepare
+        :param line: line to prepare
+        :type line: str
+        :return: prepared line
+        :rtype: list
         '''
         # split line to words and remove words < 3 chars (doesn't remove smileys)
         words_ = line.split()
@@ -71,10 +85,12 @@ class PyAI:
 
     def learn(self, line, prepared=False):
         '''
-        add line to database
+        learn from ``line``
 
-        :param str line: line to add
-        :param bool prepared: line was already split to words
+        :param line: line to add
+        :param prepared: line was already split to words
+        :type line: str
+        :type prepared: bool
         '''
         if prepared:
             words = line
@@ -95,9 +111,14 @@ class PyAI:
         '''
         generated a reply to ``start``
 
-        :param int min_length: minimal length of reply
-        :param int max_length: max length of reply
-        :param bool prepared: line was already split to words
+        :param min_length: minimal length of reply
+        :param max_length: max length of reply
+        :param prepared: line was already split to words
+        :type min_length: int
+        :type max_length: int
+        :type prepared: bool
+        :return: response
+        :rtype: str
         '''
         if prepared:
             start_words = start
@@ -146,9 +167,14 @@ class PyAI:
         '''
         process ``line``
 
-        :param str line: line to process
-        :param bool learn: learn from line
-        :param bool reply: reply to line (and return answer)
+        :param line: line to process
+        :param learn: learn from line
+        :param reply: reply to line (and return answer)
+        :type line: str
+        :type learn: bool
+        :type reply: bool
+        :return: answer if ``reply``
+        :rtype: str
         '''
         prepared_line = self.prepare_line(line)
         if learn:
