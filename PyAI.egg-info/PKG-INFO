@@ -1,0 +1,18 @@
+Metadata-Version: 1.1
+Name: PyAI
+Version: 0.0.1
+Summary: Markov-implementation with redis-database
+Home-page: https://github.com/Thor77/PyAI
+Author: Thor77
+Author-email: thor77@thor77.org
+License: MIT
+Description: UNKNOWN
+Keywords: pyai markov ai
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Topic :: Communications :: Chat
+Classifier: Topic :: Database
+Classifier: Topic :: Documentation :: Sphinx
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
