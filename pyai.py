@@ -6,9 +6,9 @@ import redis
 re_smiley = re.compile(r'[8;:=%][-oc*^]?[)(D\/\\]')
 re_smiley_reversed = re.compile(r'[)(D\/\\][-oc*^]?[8;:=%]')
 re_smiley_asian = re.compile(r'\^[o_.]?\^')
+extra_smileys = ['<3', '\o', '\o/', 'o/']
 re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
 re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
-sentence_endings = ['?', '!', '.']
 
 
 class PyAI:
@@ -47,6 +47,8 @@ class PyAI:
         :return: result of check
         :rtype: bool
         '''
+        if word in extra_smileys:
+            return True
         for re_smiley in re_smileys:
             if re_smiley.match(word):
                 return True
@@ -67,20 +69,13 @@ class PyAI:
         for word_ in words_:
             word = None
             # prevent smileys and urls from getting lower'd
-            if self._is_smiley(word_) or word_ == '<3' or re_url.match(word_):
+            if self._is_smiley(word_) or re_url.match(word_):
                 word = word_
             else:
                 word = word_.lower()
-                # filter all non-chars & non-digits from word
-                word = ''.join(c for c in word if (c.isalpha() or c.isdigit()) and c != '\n')
-            # maybe the word is completely lost now
-            if word:
+            if len(word) > 1:
                 words.append(word)
-                # check if word ended with sentence ending to add \n
-                for sentence_ending in sentence_endings:
-                    if word_.endswith(sentence_ending):
-                        words.append('\n')
-                        break
+        words.append('\n')
         return words
 
     def learn(self, line, prepared=False):
