@@ -13,7 +13,8 @@ re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
 
 class PyAI:
 
-    def __init__(self, db_prefix='pyai', db_host='localhost', db_port=6379, db_id=0):
+    def __init__(self, db_prefix='pyai', db_host='localhost',
+                 db_port=6379, db_id=0):
         '''
         :param db_prefix: prefix for redis-keys
         :param db_host: host for redis-db
@@ -63,7 +64,6 @@ class PyAI:
         :return: prepared line
         :rtype: list
         '''
-        # split line to words and remove words < 3 chars (doesn't remove smileys)
         words_ = line.split()
         words = []
         for word_ in words_:
@@ -120,7 +120,10 @@ class PyAI:
         else:
             start_words = self.prepare_line(start)
         # choose best known word to start with
-        word_relations = [(word, self.db.hlen(self._words_key(word))) for word in start_words if self.db.exists(self._words_key(word))]
+        word_relations = [
+            (word, self.db.hlen(self._words_key(word)))
+            for word in start_words if self.db.exists(self._words_key(word))
+        ]
         if not word_relations:
             return None
         if len(word_relations) == 1:
@@ -149,7 +152,11 @@ class PyAI:
                 word = list(possible_words)[0][0].decode('utf-8')
             else:
                 # sort random word but weight
-                best_words = [word.decode('utf-8') for word, num in possible_words for i in range(int(num))]
+                best_words = [
+                    word.decode('utf-8')
+                    for word, num in possible_words
+                    for i in range(int(num))
+                    ]
                 word = random.choice(best_words)
             # choosen word == line-end => break
             if word == '\n':
