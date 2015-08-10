@@ -163,6 +163,9 @@ class PyAI:
                 break
             # add to answer
             answer.append(word)
+        if len(answer) < min_length:
+            # dont return too short answers
+            return None
         return ' '.join(answer)
 
     def process(self, line, learn=True, reply=True):
