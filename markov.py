@@ -11,9 +11,9 @@ re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
 re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
 
 
-class PyAI:
+class MarkovPy:
 
-    def __init__(self, db_prefix='pyai', db_host='localhost',
+    def __init__(self, db_prefix='markovpy', db_host='localhost',
                  db_port=6379, db_id=0):
         '''
         :param db_prefix: prefix for redis-keys

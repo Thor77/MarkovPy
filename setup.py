@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='PyAI',
+    name='MarkovPy',
     version='0.0.1',
     description='Markov-implementation with redis-database',
     author='Thor77',
     author_email='thor77@thor77.org',
-    url='https://github.com/Thor77/PyAI',
+    url='https://github.com/Thor77/MarkovPy',
     license='MIT',
     classifiers=[
         'Intended Audience :: Developers',
@@ -18,7 +18,7 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
 
     ],
-    keywords='pyai markov ai',
-    py_modules=['pyai'],
+    keywords='markovpy markov ai',
+    py_modules=['markovpy'],
     install_requires=['redis']
 )

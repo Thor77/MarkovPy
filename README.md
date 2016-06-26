@@ -1,4 +1,4 @@
-# PyAI [![Documentation Status](https://readthedocs.org/projects/pyai/badge/?version=latest)](https://readthedocs.org/projects/pyai/?badge=latest)
+# MarkovPy [![Documentation Status](https://readthedocs.org/projects/pyai/badge/?version=latest)](https://readthedocs.org/projects/pyai/?badge=latest)
 A simple Markovchain-Implementation written in Python
 
 # Installation
