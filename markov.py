@@ -52,7 +52,7 @@ class MarkovPy:
                 word = word_
             else:
                 word = word_.lower()
-            if len(word) > 1:
+            if len(word) >= 1:
                 words.append(word)
         words.append('\n')
         return words
