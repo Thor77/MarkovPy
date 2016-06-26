@@ -1,7 +1,0 @@
-pyai.py
-setup.py
-PyAI.egg-info/PKG-INFO
-PyAI.egg-info/SOURCES.txt
-PyAI.egg-info/dependency_links.txt
-PyAI.egg-info/requires.txt
-PyAI.egg-info/top_level.txt
