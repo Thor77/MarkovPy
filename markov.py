@@ -1,8 +1,6 @@
 import random
 import re
 
-import redis
-
 re_smiley = re.compile(r'[8;:=%][-oc*^]?[)(D\/\\]')
 re_smiley_reversed = re.compile(r'[)(D\/\\][-oc*^]?[8;:=%]')
 re_smiley_asian = re.compile(r'\^[o_.]?\^')
@@ -13,31 +11,12 @@ re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
 
 class MarkovPy:
 
-    def __init__(self, db_prefix='markovpy', db_host='localhost',
-                 db_port=6379, db_id=0):
+    def __init__(self, store):
         '''
-        :param db_prefix: prefix for redis-keys
-        :param db_host: host for redis-db
-        :param db_port: port for redis-db
-        :param db_id: id for redis-db
-        :type db_prefix: str
-        :type db_host: str
-        :type db_port: int
-        :type db_id: int
+        :param store: a compatible markov-store
+        :type store: class
         '''
-        self.db = redis.StrictRedis(host=db_host, port=db_port, db=db_id)
-        self.prefix = db_prefix
-
-    def _words_key(self, word):
-        '''
-        prefix ``word`` with db-prefix
-
-        :param word: word to gen key for
-        :type word: str
-        :return: prefixed ``word``
-        :rtype: str
-        '''
-        return ':'.join((self.prefix, word))
+        self.store = store
 
     def _is_smiley(self, word):
         '''
@@ -96,11 +75,7 @@ class MarkovPy:
             if len(words) <= i + 1:
                 break
             next_word = words[i + 1]
-            word_db_key = self._words_key(curr_word)
-            if not self.db.exists(word_db_key):
-                self.db.hmset(word_db_key, {next_word: 1})
-            else:
-                self.db.hincrby(word_db_key, next_word)
+            self.store.insert(curr_word, next_word)
 
     def reply(self, start, min_length=5, max_length=10, prepared=False):
         '''
@@ -121,8 +96,8 @@ class MarkovPy:
             start_words = self.prepare_line(start)
         # choose best known word to start with
         word_relations = [
-            (word, self.db.hlen(self._words_key(word)))
-            for word in start_words if self.db.exists(self._words_key(word))
+            (word, self.store.relation_count(word))
+            for word in start_words if self.store.known(word)
         ]
         if not word_relations:
             return None
@@ -142,12 +117,10 @@ class MarkovPy:
         length = random.randint(min_length, max_length)
         answer = [best_known_word]
         while len(answer) < length:
-            # get all possible next words
-            word_key = self._words_key(answer[-1])
             # key doesn't exist => no possible next words
-            if not self.db.exists(word_key):
+            if not self.store.known(answer[-1]):
                 break
-            possible_words = self.db.hgetall(word_key).items()
+            possible_words = self.store.next_words(answer[-1])
             if len(possible_words) == 1:
                 word = list(possible_words)[0][0].decode('utf-8')
             else:
