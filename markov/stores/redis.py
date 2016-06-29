@@ -1,7 +1,7 @@
 import redis
 
 
-class RedisStore:
+class Redis:
     def __init__(self, host='localhost', port=6379, dbid=0, prefix='markovpy'):
         '''
         Initialize a redis-store for markov-data
