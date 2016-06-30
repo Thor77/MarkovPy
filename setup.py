@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='MarkovPy',
-    version='0.2.0',
+    version='0.2.1',
     description='Markov-implementation with redis-database',
     author='Thor77',
     author_email='thor77@thor77.org',
@@ -18,5 +18,5 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
     keywords='markovpy markov ai',
-    packages=['markov']
+    packages=['markov', 'markov.stores']
 )
