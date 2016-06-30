@@ -18,6 +18,5 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
     keywords='markovpy markov ai',
-    packages=['markov'],
-    install_requires=['redis']
+    packages=['markov']
 )
