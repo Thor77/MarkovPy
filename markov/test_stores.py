@@ -1,3 +1,5 @@
+from os import remove
+
 import pytest
 from markov.stores import Pickle, Redis
 
@@ -17,3 +19,18 @@ def test_stores(store):
     store.insert('test', 'test3')
     assert sorted(store.next_words('test')) ==\
         sorted([('test2', 2), ('test3', 1)])
+
+
+@pytest.fixture
+def emptyfile(request):
+    path = 'testempty.pickle'
+    open(path, 'w')
+
+    def fin():
+        remove(path)
+    request.addfinalizer(fin)
+    return path
+
+
+def test_pickle(emptyfile):
+    Pickle(emptyfile)
