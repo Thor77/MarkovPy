@@ -85,7 +85,10 @@ class Redis:
         :return: words seen after `word`
         :rtype: list[tuple(word, score)]
         '''
-        return self.db.hgetall(self._key(word)).items()
+        return [
+            (word.decode('utf-8'), int(score))
+            for word, score in self.db.hgetall(self._key(word)).items()
+        ]
 
     def __len__(self):
         return len(self.db.keys(self._key('*')))

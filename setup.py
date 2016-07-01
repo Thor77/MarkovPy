@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='MarkovPy',
-    version='0.3.1',
+    version='0.3.2',
     description='Markov-implementation with redis-database',
     author='Thor77',
     author_email='thor77@thor77.org',
