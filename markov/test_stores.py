@@ -9,6 +9,7 @@ from markov.stores import Pickle, Redis
     Redis(prefix='markovpytest')
 ])
 def test_stores(store):
+    assert store.relation_count('test') == 0
     store.insert('test', 'test2')
     assert len(store) == 1
     assert store.relation_count('test') == 1
