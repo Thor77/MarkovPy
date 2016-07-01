@@ -86,3 +86,6 @@ class Redis:
         :rtype: list[tuple(word, score)]
         '''
         return self.db.hgetall(self._key(word)).items()
+
+    def __len__(self):
+        return len(self.db.keys(self._key('*')))

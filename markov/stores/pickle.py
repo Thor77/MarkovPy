@@ -35,3 +35,6 @@ class Pickle(Store):
 
     def next_words(self, word):
         return self.store.get(word, {}).items()
+
+    def __len__(self):
+        return len(self.store)
