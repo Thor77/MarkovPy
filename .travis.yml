@@ -1,0 +1,27 @@
+language: python
+python:
+  - 2.7
+  - 3.5
+
+services:
+  - redis-server
+
+matrix:
+  include:
+    - python: 2.7
+      install:
+        - pip install pyflakes
+        - pip install isort
+      script:
+        - pyflakes markov/**/*.py
+        - isort -c markov/**/*.py
+
+install:
+  - pip install -r testing_requirements.txt
+  - pip install pytest-cov
+
+script: py.test --cov=markov markov/
+
+after_success:
+  - pip install coveralls
+  - coveralls
