@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='MarkovPy',
     version='0.3.3',
-    description='Markov-implementation with redis-database',
+    description='A simple Markovchain-Implementation',
     author='Thor77',
     author_email='thor77@thor77.org',
     url='https://github.com/Thor77/MarkovPy',
