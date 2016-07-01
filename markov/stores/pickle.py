@@ -22,7 +22,7 @@ class Pickle(Store):
             if next_word in self.store[word]:
                 self.store[word][next_word] += 1
             else:
-                self.store[word] = {next_word: 1}
+                self.store[word][next_word] = 1
         else:
             self.store[word] = {next_word: 1}
         self.commit()
