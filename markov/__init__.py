@@ -122,13 +122,13 @@ class MarkovPy:
                 break
             possible_words = self.store.next_words(answer[-1])
             if len(possible_words) == 1:
-                word = list(possible_words)[0][0].decode('utf-8')
+                word = list(possible_words)[0][0]
             else:
                 # sort random word but weight
                 best_words = [
-                    word.decode('utf-8')
+                    word
                     for word, num in possible_words
-                    for i in range(int(num))
+                    for i in range(num)
                     ]
                 word = random.choice(best_words)
             # choosen word == line-end => break
