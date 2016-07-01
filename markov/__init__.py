@@ -159,3 +159,6 @@ class MarkovPy:
             self.learn(prepared_line, prepared=True)
         if reply:
             return self.reply(prepared_line, prepared=True)
+
+    def __len__(self):
+        return len(self.store)
