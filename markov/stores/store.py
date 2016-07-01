@@ -44,3 +44,12 @@ class Store:
         :rtype list[tuple(word, score)]
         '''
         return [('', 0)]
+
+    def __len__(self):
+        '''
+        Return count of all known words
+
+        :return: count of all known words
+        :rtype: int
+        '''
+        return 0
