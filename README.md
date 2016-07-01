@@ -1,4 +1,4 @@
-# MarkovPy [![Build Status](https://travis-ci.org/Thor77/MarkovPy.svg?branch=master)](https://travis-ci.org/Thor77/MarkovPy)
+# MarkovPy [![Build Status](https://travis-ci.org/Thor77/MarkovPy.svg?branch=master)](https://travis-ci.org/Thor77/MarkovPy) [![Coverage Status](https://coveralls.io/repos/github/Thor77/MarkovPy/badge.svg?branch=master)](https://coveralls.io/github/Thor77/MarkovPy?branch=master)
 A simple Markovchain-Implementation written in Python
 
 # Installation
