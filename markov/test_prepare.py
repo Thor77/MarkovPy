@@ -9,6 +9,7 @@ from markov.markov import is_smiley, prepare_line, re_url
     ('(:', True),
     ('):', True),
     ('D:', True),
+    ('<3', True),
     ('::', False),
     (':t', False),
     (':a', False),
