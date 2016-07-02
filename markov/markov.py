@@ -26,6 +26,29 @@ def is_smiley(word):
     return False
 
 
+def prepare_line(line):
+    '''
+    split words to line, lower words, add newlines and remove invalid chars
+
+    :param line: line to prepare
+    :type line: str
+    :return: prepared line
+    :rtype: list
+    '''
+    words_ = line.split()
+    words = []
+    for word_ in words_:
+        word = None
+        # prevent smileys and urls from getting lower'd
+        if is_smiley(word_) or re_url.match(word_):
+            word = word_
+        else:
+            word = word_.lower()
+        if len(word) >= 1:
+            words.append(word)
+    words.append('\n')
+    return words
+
 class MarkovPy:
 
     def __init__(self, store):
@@ -34,29 +57,6 @@ class MarkovPy:
         :type store: class
         '''
         self.store = store
-
-    def prepare_line(self, line):
-        '''
-        split words to line, lower words, add newlines and remove invalid chars
-
-        :param line: line to prepare
-        :type line: str
-        :return: prepared line
-        :rtype: list
-        '''
-        words_ = line.split()
-        words = []
-        for word_ in words_:
-            word = None
-            # prevent smileys and urls from getting lower'd
-            if is_smiley(word_) or re_url.match(word_):
-                word = word_
-            else:
-                word = word_.lower()
-            if len(word) >= 1:
-                words.append(word)
-        words.append('\n')
-        return words
 
     def learn(self, line, prepared=False):
         '''
@@ -70,7 +70,7 @@ class MarkovPy:
         if prepared:
             words = line
         else:
-            words = self.prepare_line(line)
+            words = prepare_line(line)
         for i in range(0, len(words)):
             curr_word = words[i]
             if len(words) <= i + 1:
@@ -94,7 +94,7 @@ class MarkovPy:
         if prepared:
             start_words = start
         else:
-            start_words = self.prepare_line(start)
+            start_words = prepare_line(start)
         # choose best known word to start with
         word_relations = [
             (word, self.store.relation_count(word))
@@ -155,7 +155,7 @@ class MarkovPy:
         :return: answer if ``reply``
         :rtype: str
         '''
-        prepared_line = self.prepare_line(line)
+        prepared_line = prepare_line(line)
         if learn:
             self.learn(prepared_line, prepared=True)
         if reply:
