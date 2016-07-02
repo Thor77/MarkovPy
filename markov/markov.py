@@ -8,6 +8,7 @@ extra_smileys = ['<3', '\o', '\o/', 'o/']
 re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
 re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
 
+
 def is_smiley(word):
     '''
     check if ``word`` is a smiley
@@ -48,6 +49,7 @@ def prepare_line(line):
             words.append(word)
     words.append('\n')
     return words
+
 
 class MarkovPy:
 
