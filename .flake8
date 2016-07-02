@@ -1,2 +1,4 @@
 [flake8]
-exclude = markov/stores/__init__.py
+exclude =
+    markov/__init__.py,
+    markov/stores/__init__.py
