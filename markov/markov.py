@@ -8,6 +8,23 @@ extra_smileys = ['<3', '\o', '\o/', 'o/']
 re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
 re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
 
+def is_smiley(word):
+    '''
+    check if ``word`` is a smiley
+
+    :param word: word to check
+    :type word: str
+
+    :return: result of check
+    :rtype: bool
+    '''
+    if word in extra_smileys:
+        return True
+    for re_smiley in re_smileys:
+        if re_smiley.match(word):
+            return True
+    return False
+
 
 class MarkovPy:
 
@@ -17,22 +34,6 @@ class MarkovPy:
         :type store: class
         '''
         self.store = store
-
-    def _is_smiley(self, word):
-        '''
-        check if ``word`` is a smiley
-
-        :param word: word to check
-        :type word: str
-        :return: result of check
-        :rtype: bool
-        '''
-        if word in extra_smileys:
-            return True
-        for re_smiley in re_smileys:
-            if re_smiley.match(word):
-                return True
-        return False
 
     def prepare_line(self, line):
         '''
@@ -48,7 +49,7 @@ class MarkovPy:
         for word_ in words_:
             word = None
             # prevent smileys and urls from getting lower'd
-            if self._is_smiley(word_) or re_url.match(word_):
+            if is_smiley(word_) or re_url.match(word_):
                 word = word_
             else:
                 word = word_.lower()
