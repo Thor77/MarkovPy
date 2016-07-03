@@ -1,21 +1,20 @@
-.. MarkovPy documentation master file, created by
-   sphinx-quickstart on Sun Jun 26 18:40:24 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+MarkovPy
+========
+MarkovPy is a modular MarkovChain-Implementation for Python.::
 
-Welcome to MarkovPy's documentation!
-====================================
+  from markov import MarkovPy
+  from markov.stores import Store
+
+  m = MarkovPy(store=Store())
+  m.learn('hello, world!')
+  m.reply('hello,', min_length=2)
+  # hello, world!
+
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   stores
+   api
