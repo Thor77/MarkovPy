@@ -100,7 +100,7 @@ class MarkovPy:
         # choose best known word to start with
         word_relations = [
             (word, self.store.relation_count(word))
-            for word in start_words if self.store.known(word)
+            for word in start_words if word in self.store
         ]
         if not word_relations:
             return None
@@ -121,7 +121,7 @@ class MarkovPy:
         answer = [best_known_word]
         while len(answer) < length:
             # key doesn't exist => no possible next words
-            if not self.store.known(answer[-1]):
+            if answer[-1] not in self.store:
                 break
             possible_words = self.store.next_words(answer[-1])
             if len(possible_words) == 1:

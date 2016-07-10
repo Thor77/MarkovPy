@@ -18,7 +18,7 @@ def test_stores(store):
     store.insert('test', 'test2')
     assert len(store) == 1
     assert store.relation_count('test') == 1
-    assert store.known('test')
+    assert 'test' in store
     assert store.next_words('test') == [('test2', 1)]
     store.insert('test', 'test2')
     assert store.next_words('test') == [('test2', 2)]

@@ -21,18 +21,6 @@ class Store:
         '''
         return 0
 
-    def known(self, word):
-        '''
-        Check, if `word` is present in the store
-
-        :param word: target word
-        :type word: str
-
-        :return: presence of `word` in the store
-        :rtype: bool
-        '''
-        return False
-
     def next_words(self, word):
         '''
         Return all words related to `word`
@@ -49,6 +37,18 @@ class Store:
         '''
         Remove all words and relations from the store
         '''
+
+    def __contains__(self, word):
+        '''
+        Check, if `word` is present in the store
+
+        :param word: target word
+        :type word: str
+
+        :return: presence of `word` in the store
+        :rtype: bool
+        '''
+        return False
 
     def __len__(self):
         '''

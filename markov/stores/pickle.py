@@ -30,15 +30,15 @@ class Pickle(Store):
     def relation_count(self, word):
         return len(self.store.get(word, {}))
 
-    def known(self, word):
-        return word in self.store
-
     def next_words(self, word):
         return list(self.store.get(word, {}).items())
 
     def clear(self):
         self.store = {}
         self.commit()
+
+    def __contains__(self, word):
+        return word in self.store
 
     def __len__(self):
         return len(self.store)

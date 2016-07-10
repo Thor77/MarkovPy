@@ -63,18 +63,6 @@ class Redis:
         else:
             return 0
 
-    def known(self, word):
-        '''
-        Check if `word` is present in the store
-
-        :param word: target word
-        :type word: str
-
-        :return: presence of `word` in the store
-        :rtype: bool
-        '''
-        return self.db.exists(self._key(word))
-
     def next_words(self, word):
         '''
         Return all next words for `word`
@@ -97,6 +85,18 @@ class Redis:
         '''
         for key in self.db.keys(self._key('*')):
             self.db.delete(key)
+
+    def __contains__(self, word):
+        '''
+        Check if `word` is present in the store
+
+        :param word: target word
+        :type word: str
+
+        :return: presence of `word` in the store
+        :rtype: bool
+        '''
+        return self.db.exists(self._key(word))
 
     def __len__(self):
         return len(self.db.keys(self._key('*')))
