@@ -20,6 +20,9 @@ Stores
 .. autoclass:: markov.stores.Store
   :members:
 
+  .. automethod:: markov.stores.Store.__len__
+  .. automethod:: markov.stores.Store.__contains__
+
 .. autoclass:: markov.stores.Pickle
 
   .. automethod:: markov.stores.Pickle.__init__
