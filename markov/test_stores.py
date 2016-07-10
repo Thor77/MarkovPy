@@ -4,9 +4,14 @@ import pytest
 from markov.stores import Pickle, Redis
 
 
+def clear_store(store):
+    store.clear()
+    return store
+
+
 @pytest.mark.parametrize('store', [
-    Pickle('test.pickle'),
-    Redis(prefix='markovpytest')
+    clear_store(Pickle('test.pickle')),
+    clear_store(Redis(prefix='markovpytest'))
 ])
 def test_stores(store):
     assert store.relation_count('test') == 0
