@@ -90,5 +90,13 @@ class Redis:
             for w, score in self.db.hgetall(self._key(word)).items()
         ]
 
+    def clear(self):
+        '''
+        Remove all words from the store
+        Warning: This is very slow, because it iterates over all keys
+        '''
+        for key in self.db.keys(self._key('*')):
+            self.db.delete(key)
+
     def __len__(self):
         return len(self.db.keys(self._key('*')))

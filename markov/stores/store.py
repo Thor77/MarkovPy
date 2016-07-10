@@ -45,6 +45,11 @@ class Store:
         '''
         return [('', 0)]
 
+    def clear(self):
+        '''
+        Remove all words and relations from the store
+        '''
+
     def __len__(self):
         '''
         Return count of all known words
