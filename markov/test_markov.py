@@ -27,3 +27,13 @@ def test_learn(markov):
 def test_reply(markov):
     markov.learn('c d')
     assert markov.reply('c', min_length=0) in ['c', 'c d']
+
+
+def test_reply_empty(markov):
+    assert markov.reply('e') is None
+
+
+def test_reply_multi(markov):
+    markov.learn('f g')
+    markov.learn('f f')
+    assert markov.reply('f', min_length=1, max_length=2) in ['f', 'f g', 'f f']
