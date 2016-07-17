@@ -26,7 +26,7 @@ def test_learn(markov):
 
 def test_reply(markov):
     markov.learn('c d')
-    assert markov.reply('c', min_length=0) in ['c', 'c d']
+    assert markov.reply('c', min_length=1, max_length=2) in ['c', 'c d']
 
 
 def test_reply_empty(markov):
