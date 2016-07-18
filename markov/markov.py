@@ -96,7 +96,10 @@ class MarkovPy:
                 else:
                     break
             # choose a random word from that list
-            return random.choice(best_known_words)
+            if len(best_known_words) == 1:
+                return best_known_words[0]
+            else:
+                return random.choice(best_known_words)
 
     def learn(self, line, prepared=False):
         '''
