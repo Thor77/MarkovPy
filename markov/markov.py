@@ -60,6 +60,44 @@ class MarkovPy:
         '''
         self.store = store
 
+    def _best_known_word(self, words):
+        '''
+        Find the best known word out of `words`
+
+        :param words: list of words
+        :type words: list
+
+        :returns: best known word
+        :rtype: str
+        '''
+        # build word_relations-list (word, relation-count)
+        # TODO use list of named tuple's instead
+        word_relations = [
+            (word, self.store.relation_count(word))
+            for word in words if word in self.store
+        ]
+        # no known words => None
+        if not word_relations:
+            return None
+        # only one word in the list => return
+        if len(word_relations) == 1:
+            return word_relations[0][0]
+        else:
+            # sort words by relation-count
+            sorted_word_relations = sorted(word_relations, key=lambda x: x[1])
+            highest_num = sorted_word_relations[0][1]
+            # add word with most relations to the best_known_words-list
+            best_known_words = [sorted_word_relations[0][0]]
+            for word, num in word_relations:
+                # check if word has the same (highest) relation-count
+                if num == highest_num:
+                    # => add it to the best_known_words-list
+                    best_known_words.append(word)
+                else:
+                    break
+            # choose a random word from that list
+            return random.choice(best_known_words)
+
     def learn(self, line, prepared=False):
         '''
         learn from ``line``
@@ -97,28 +135,12 @@ class MarkovPy:
             start_words = start
         else:
             start_words = prepare_line(start)
-        # choose best known word to start with
-        word_relations = [
-            (word, self.store.relation_count(word))
-            for word in start_words if word in self.store
-        ]
-        if not word_relations:
-            return None
-        if len(word_relations) == 1:
-            best_known_word = word_relations[0][0]
-        else:
-            sorted_word_relations = sorted(word_relations, key=lambda x: x[1])
-            highest_num = sorted_word_relations[0][1]
-            best_known_words = [sorted_word_relations[0][0]]
-            for word, num in word_relations:
-                if num == highest_num:
-                    best_known_words.append(word)
-                else:
-                    break
-            best_known_word = random.choice(best_known_words)
         # gen answer
+        start_word = self._best_known_word(start_words)
+        if not start_word:
+            return None
         length = random.randint(min_length, max_length)
-        answer = [best_known_word]
+        answer = [start_word]
         while len(answer) < length:
             # key doesn't exist => no possible next words
             if answer[-1] not in self.store:
