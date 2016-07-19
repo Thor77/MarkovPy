@@ -84,7 +84,8 @@ class MarkovPy:
             return word_relations[0][0]
         else:
             # sort words by relation-count
-            sorted_word_relations = sorted(word_relations, key=lambda x: x[1])
+            sorted_word_relations = sorted(word_relations, key=lambda x: x[1],
+                                           reverse=True)
             highest_num = sorted_word_relations[0][1]
             # add word with most relations to the best_known_words-list
             best_known_words = [sorted_word_relations[0][0]]
