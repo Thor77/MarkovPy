@@ -1,5 +1,6 @@
 import random
 import re
+from collections import Counter
 
 re_smiley = re.compile(r'[8;:=%][-oc*^]?[)(D\/\\]')
 re_smiley_reversed = re.compile(r'[)(D\/\\][-oc*^]?[8;:=%]')
@@ -154,12 +155,9 @@ class MarkovPy:
                 word = list(possible_words)[0][0]
             else:
                 # sort random word but weight
-                best_words = [
-                    word
-                    for word, num in possible_words
-                    for i in range(num)
-                    ]
-                word = random.choice(best_words)
+                word = random.choice(
+                    list(Counter(dict(possible_words)).elements())
+                )
             # choosen word == line-end => break
             if word == '\n':
                 break
