@@ -31,10 +31,10 @@ class Pickle(Store):
     def relation_count(self, word):
         return len(self.store.get(word, {}))
 
-    def next_words(self, word):
+    def next_words(self, target_word):
         return [
             Word(word, score)
-            for word, score in self.store.get(word, {}).items()
+            for word, score in self.store.get(target_word, {}).items()
         ]
 
     def clear(self):
