@@ -1,6 +1,6 @@
 import random
 import re
-from collections import Counter
+from collections import Counter, namedtuple
 
 re_smiley = re.compile(r'[8;:=%][-oc*^]?[)(D\/\\]')
 re_smiley_reversed = re.compile(r'[)(D\/\\][-oc*^]?[8;:=%]')
@@ -8,6 +8,8 @@ re_smiley_asian = re.compile(r'\^[o_.]?\^')
 extra_smileys = ['<3', '\o', '\o/', 'o/']
 re_smileys = [re_smiley, re_smiley_reversed, re_smiley_asian]
 re_url = re.compile(r'(?:(?:https?|ftp):\/\/.*)')
+
+Word = namedtuple('Word', ['word', 'score'])
 
 
 def is_smiley(word):
@@ -72,9 +74,8 @@ class MarkovPy:
         :rtype: str
         '''
         # build word_relations-list (word, relation-count)
-        # TODO use list of named tuple's instead
         word_relations = [
-            (word, self.store.relation_count(word))
+            Word(word, score=self.store.relation_count(word))
             for word in words if word in self.store
         ]
         # no known words => None
@@ -82,14 +83,15 @@ class MarkovPy:
             return None
         # only one word in the list => return
         if len(word_relations) == 1:
-            return word_relations[0][0]
+            return word_relations[0].word
         else:
             # sort words by relation-count
-            sorted_word_relations = sorted(word_relations, key=lambda x: x[1],
-                                           reverse=True)
-            highest_num = sorted_word_relations[0][1]
+            sorted_word_relations = sorted(
+                word_relations, key=lambda x: x.score, reverse=True
+            )
+            highest_num = sorted_word_relations[0].score
             # add word with most relations to the best_known_words-list
-            best_known_words = [sorted_word_relations[0][0]]
+            best_known_words = [sorted_word_relations[0].word]
             for word, num in word_relations:
                 # check if word has the same (highest) relation-count
                 if num == highest_num:
