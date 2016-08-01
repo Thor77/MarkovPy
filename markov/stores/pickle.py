@@ -1,6 +1,7 @@
 import pickle
 from os.path import exists
 
+from markov.markov import Word
 from markov.stores import Store
 
 
@@ -31,7 +32,10 @@ class Pickle(Store):
         return len(self.store.get(word, {}))
 
     def next_words(self, word):
-        return list(self.store.get(word, {}).items())
+        return [
+            Word(word, score)
+            for word, score in self.store.get(word, {}).items()
+        ]
 
     def clear(self):
         self.store = {}

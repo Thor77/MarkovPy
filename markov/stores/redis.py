@@ -1,4 +1,5 @@
 import redis
+from markov.markov import Word
 
 
 class Redis:
@@ -74,7 +75,7 @@ class Redis:
         :rtype: list[tuple(word, score)]
         '''
         return [
-            (w.decode('utf-8'), int(score))
+            Word(w.decode('utf-8'), int(score))
             for w, score in self.db.hgetall(self._key(word)).items()
         ]
 

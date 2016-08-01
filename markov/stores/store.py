@@ -1,3 +1,6 @@
+from markov.markov import Word
+
+
 class Store:
     '''
     A generic store for markov-data
@@ -29,9 +32,9 @@ class Store:
         :type word: str
 
         :return: words related to `word`
-        :rtype list[tuple(word, score)]
+        :rtype [markov.markov.Word]
         '''
-        return [('', 0)]
+        return [Word('', score=0)]
 
     def clear(self):
         '''
