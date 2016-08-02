@@ -39,6 +39,11 @@ def test_reply_multi(markov):
     assert markov.reply('f', min_length=1, max_length=2) in ['f', 'f g', 'f f']
 
 
+def test_reply_min_length(markov):
+    markov.learn('f g')
+    assert markov.reply('f', min_length=42) is None
+
+
 def test_best_known_word(markov):
     markov.learn('f')
     assert markov._best_known_word(['f']) == 'f'

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='MarkovPy',
-    version='0.5.9',
+    version='0.5.10',
     description='A simple Markovchain-Implementation',
     author='Thor77',
     author_email='thor77@thor77.org',
