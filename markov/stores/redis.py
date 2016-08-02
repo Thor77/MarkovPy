@@ -32,16 +32,6 @@ class Redis:
         return ':'.join((self.prefix, word))
 
     def insert(self, word, next_word):
-        '''
-        Insert data into the store
-        `next_word` was seen after `word`
-
-        :param word: target word
-        :param next_word: word seen after `word`
-
-        :type word: str
-        :type next_word: str
-        '''
         key = self._key(word)
         if not self.db.exists(key):
             self.db.hmset(key, {next_word: 1})
@@ -49,15 +39,6 @@ class Redis:
             self.db.hincrby(key, next_word)
 
     def relation_count(self, word):
-        '''
-        Return number of relations for `word`
-
-        :param word: target word
-        :type word: str
-
-        :return: number of relations for `word`
-        :rtype: int
-        '''
         key = self._key(word)
         if self.db.exists(key):
             return self.db.hlen(key)
@@ -65,38 +46,16 @@ class Redis:
             return 0
 
     def next_words(self, word):
-        '''
-        Return all next words for `word`
-
-        :param word: target word
-        :type word: str
-
-        :return: words seen after `word`
-        :rtype: list[tuple(word, score)]
-        '''
         return [
             Word(w.decode('utf-8'), int(score))
             for w, score in self.db.hgetall(self._key(word)).items()
         ]
 
     def clear(self):
-        '''
-        Remove all words from the store
-        Warning: This is very slow, because it iterates over all keys
-        '''
         for key in self.db.keys(self._key('*')):
             self.db.delete(key)
 
     def __contains__(self, word):
-        '''
-        Check if `word` is present in the store
-
-        :param word: target word
-        :type word: str
-
-        :return: presence of `word` in the store
-        :rtype: bool
-        '''
         return self.db.exists(self._key(word))
 
     def __len__(self):
