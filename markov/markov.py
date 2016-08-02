@@ -146,6 +146,8 @@ class MarkovPy:
         start_word = self._best_known_word(start_words)
         if not start_word:
             return None
+        if min_length > max_length:
+            max_length = min_length + 1
         length = random.randint(min_length, max_length)
         answer = [start_word]
         while len(answer) < length:
