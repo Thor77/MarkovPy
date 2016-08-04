@@ -6,7 +6,7 @@ A simple Markovchain-Implementation written in Python
 * Clone this repo `git clone https://github.com/Thor77/MarkovPy` and run `python3 setup.py install`
 
 # Usage
-Initialize a new `MarkovPy`-Instance with a initialized store:
+Initialize a new `MarkovPy`-Instance with an initialized store:
 ```
 from markov.stores import Store
 m = markov.MarkovPy(store=Store())
