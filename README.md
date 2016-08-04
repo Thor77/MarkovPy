@@ -11,6 +11,17 @@ Initialize a new `MarkovPy`-Instance with an initialized store:
 from markov.stores import Store
 m = markov.MarkovPy(store=Store())
 ```
+Now give it some data to learn from:
+```
+m.learn('hey how are you?')
+m.learn('im fine.')
+m.learn('great, see you')
+```
+And finally let it generate a reply:
+```
+m.reply('im')
+# im fine.
+```
 
 ## Available stores
 #### Pickle
