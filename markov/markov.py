@@ -119,11 +119,11 @@ class MarkovPy:
         else:
             words = prepare_line(line)
         for i in range(0, len(words)):
-            curr_word = words[i]
+            current_word = words[i]
             if len(words) <= i + 1:
                 break
             next_word = words[i + 1]
-            self.store.insert(curr_word, next_word)
+            self.store.insert(current_word, next_word)
 
     def reply(self, start, min_length=5, max_length=10, prepared=False):
         '''
