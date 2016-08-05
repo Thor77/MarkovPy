@@ -1,8 +1,9 @@
 import redis
 from markov.markov import Word
+from markov.stores import Store
 
 
-class Redis:
+class Redis(Store):
     def __init__(self, host='localhost', port=6379, dbid=0, prefix='markovpy'):
         '''
         Initialize a redis-store for markov-data
