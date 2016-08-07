@@ -39,6 +39,13 @@ class Redis(Store):
         else:
             self.db.hincrby(key, next_word)
 
+    def insert_previous(self, word, previous_word):
+        key = self._key(word) + '_prev'
+        if not self.db.exists(key):
+            self.db.hmset(key, {previous_word: 1})
+        else:
+            self.db.hincrby(key, previous_word)
+
     def relation_count(self, word):
         key = self._key(word)
         if self.db.exists(key):
@@ -50,6 +57,12 @@ class Redis(Store):
         return [
             Word(w.decode('utf-8'), int(score))
             for w, score in self.db.hgetall(self._key(word)).items()
+        ]
+
+    def previous_words(self, word):
+        return [
+            Word(w.decode('utf-8'), int(score))
+            for w, score in self.db.hgetall(self._key(word) + '_prev').items()
         ]
 
     def clear(self):
