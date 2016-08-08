@@ -24,6 +24,11 @@ def test_learn(markov):
     assert markov.store.next_words('a') == [('b', 1)]
 
 
+def test_learn_previous(markov):
+    markov.learn('a b')
+    assert markov.store.previous_words('b') == [('a', 1)]
+
+
 def test_reply(markov):
     markov.learn('c d')
     assert markov.reply('c', min_length=1, max_length=2) in ['c', 'c d']
