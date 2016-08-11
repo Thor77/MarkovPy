@@ -156,7 +156,7 @@ class MarkovPy:
                 break
             possible_words = self.store.next_words(answer[-1])
             if len(possible_words) == 1:
-                word = list(possible_words)[0][0]
+                word = possible_words[0][0]
             else:
                 # sort random word but weight
                 word = random.choice(
