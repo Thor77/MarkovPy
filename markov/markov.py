@@ -148,9 +148,8 @@ class MarkovPy:
             return None
         if min_length > max_length:
             max_length = min_length + 1
-        length = random.randint(min_length, max_length)
         answer = [start_word]
-        while len(answer) < length:
+        while len(answer) < max_length:
             # key doesn't exist => no possible next words
             if answer[-1] not in self.store:
                 break
