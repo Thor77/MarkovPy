@@ -127,7 +127,7 @@ class MarkovPy:
 
     def reply(self, start, min_length=5, max_length=10, prepared=False):
         '''
-        generated a reply to ``start``
+        generate a reply to ``start``
 
         :param min_length: minimal length of reply
         :param max_length: max length of reply
